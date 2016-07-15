@@ -5,33 +5,36 @@
 int main() 
 {
 	float A[99][99], E[99][99];
-	float C[99], B[99], X0[99], X1[99];
-	float tol, maximo;
-	int n, i, j, cota;
+	float C[99], B[99], X0[99], X1[99], dif[99];
+	float tol, suma, max;
+	int n, i, j;
 	
 	printf("Ingresar dimension de la matriz, luego la tolerancia\n");
 	scanf("%d %f", &n, &tol);
-	n=n+1;
 	
-	// A y B
-	A[1][1] = 2;
-	A[1][2] = 0.3;
-	A[1][3] = 0.2;
-	A[2][1] = 0.1;
-	A[2][2] = 3;
-	A[2][3] = 0.4;
-	A[3][1] = 0.1;
-	A[3][2] = 0.2;
-	A[3][3] = 5;
+	/*
+	 * printf("Ingrese X0(1), X0(2), X0(3), respectivamente\n");
+     *scanf("%f %f %f", &X0[0], &X0[1], &X0[2]);
+	 */
+	
+	// A y B y semilla
+	A[0][0] = 2;
+	A[0][1] = 0.3;
+	A[0][2] = 0.2;
+	A[1][0] = 0.1;
+	A[1][1] = 3;
+	A[1][2] = 0.4;
+	A[2][0] = 0.1;
+	A[2][1] = 0.2;
+	A[2][2] = 5;
 
+	B[0] = 12;
 	B[1] = 12;
-	B[2] = 12;
-	B[3] = 10;
+	B[2] = 10;
 	
-	//semilla
+	X0[0] = 0;
 	X0[1] = 0;
 	X0[2] = 0;
-	X0[3] = 0;
 	
 	for (i=0; i<n ;i++) //Construcción de C
 	{
@@ -48,46 +51,57 @@ int main()
 			}
 			else
 			{
-				-A[i][j] / A[i][i];
+				E[i][j] = (-1 * A[i][j]) / A[i][i];
 			}
 		}
 	}
 	
-	printf("E(1,1) = %f, E(1,2) = %f, E(1,3) = %f", E[1][1], E[1][2], E[1][3]); // print E fila 1
-	printf("E(1,1) = %f, E(1,2) = %f, E(1,3) = %f", E[1][1], E[1][2], E[1][3]); // print E fila 2
-	printf("E(1,1) = %f, E(1,2) = %f, E(1,3) = %f", E[1][1], E[1][2], E[1][3]); // print E fila 3
+	printf("E(1,1) = %lf, E(1,2) = %lf, E(1,3) = %lf\n", E[0][0], E[0][1], E[0][2]); // print E fila 1
+	printf("E(2,1) = %lf, E(2,2) = %lf, E(2,3) = %lf\n", E[1][0], E[1][1], E[1][2]); // print E fila 2
+	printf("E(3,1) = %lf, E(3,2) = %lf, E(3,3) = %lf\n", E[2][0], E[2][1], E[2][2]); // print E fila 3
 	
-	printf("C(1) = %f, C(2) = %f, C(3) = %f", C[1], C[2], C[3]); // print C
+	printf("C(1) = %2.2f, C(2) = %2.2f, C(3) = %2.2f\n", C[0], C[1], C[2]); // print C
 	
-	cota = 1;
+	max = 1;
 	
-	while (cota > tol)
+	while (max > tol)
 	{	
-		for (i=0; i<n; i++) // Estimaciones
+		printf("entro\n");
+		suma = 0;
+		
+		for (i=0; i<n; i++) // X1
 		{
 			for (j=0; j<n; j++)
 			{
-				X1[i] = E[i][j] * X0[i] + C[i];
+				suma = E[i][j] * X0[j] + suma;
+				
 			}
+			X1[i] = suma + C[i];
 		}
 		
-		maximo = fabs ((X0[0]) - (X1[0]));
-		
-		for (i=0; i<n; i++) // Cota
+		for (i=0; i<n; i++) // diferencia
 		{
-			if (fabs ((X0[i]) - (X1[i])) > maximo)
+			dif[i] = fabs ((X0[0]) - (X1[0]));
+			max = dif[0];
+			for (i=1; i<n; i++)
 			{
-				maximo = fabs ((X0[i]) - (X1[i]));
+				if (dif[i] > max)
+				{
+					max = dif [i];
+				}
 			}
 		}
 		
 		for (i=0; i<n; i++) // X0 toma el valor de X1
 		{
-			X0[i] = X1 [i];
+			X0[i] = X1[i];
 		}
+		
 	}
 	
-	printf("X(1) = %f, X(2) = %f, X(3) = %f", X0[1], X0[2], X0[3]);
+	printf("salio\n");
+	
+	printf("X(1) = %lf, X(2) = %lf, X(3) = %lf", X1[0], X1[1], X1[2]);
 	
 	return 0;
 }
